@@ -7,8 +7,8 @@ import Link from 'next/link';
 import DisplayTechStack from '@/components/DisplayTechStack';
 
 
-function InterviewCard(
-    {interviewId,
+async function InterviewCard(
+    {id,
     userId,
     role,
     type,
@@ -16,9 +16,21 @@ function InterviewCard(
     createdAt,
     }) {
 
-    const feedback= null;
-    const normalizedType = /mix/gi.test(type) ? 'Mixed' : type;
-    const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now()).format('MMM D, YYYY');
+    const feedback =
+    userId && interviewId
+        ? await getFeedbackByInterviewId({
+            interviewId,
+            userId,
+        })
+        : null;
+
+    const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
+
+
+    const formattedDate = dayjs(
+    feedback?.createdAt || createdAt || Date.now()
+    ).format("MMM D, YYYY");
+
 
   return (
     <div className='card-border w-[360px] max-sm:w-full min-h-96'>
@@ -52,8 +64,8 @@ function InterviewCard(
 
                     </div>
                     <Button className='btn-primary'>
-                        <Link href={feedback?`/interview/${interviewId}/feedback`
-                                        :`/interview/${interviewId}`}>
+                        <Link href={feedback?`/interview/${id}/feedback`
+                                        :`/interview/${id}`}>
                             {feedback ? 'View Interview':'Take Interview'}
                         </Link>
                     </Button>
