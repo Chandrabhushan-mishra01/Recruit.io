@@ -9,7 +9,7 @@ export async function GET() {
   return Response.json({ success: true, data: "Thank you!" }, { status: 200 });
 }
 
-export async function Postpone(request){
+export async function POST(request){
     const {type,role,level,techstack,amount,userid} = await request.json();
     try {
         const { text: questions } = await generateText({
