@@ -1,13 +1,26 @@
-"use client";
-
+"use server"
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import InterviewCard from "@/components/InterviewCard";
-import { dummyInterviews } from "@/constants";
+import { getCurrentUser } from "@/lib/actions/auth.action";
+import { getInterviewsByUserId,getLatestInterviews } from "@/lib/actions/general.action";
 
 
-export default function Home() {
+export default async function Home() {
+
+  const user = await getCurrentUser();
+
+  const [userInterviews, allInterview] = await Promise.all([
+    getInterviewsByUserId(user?.id),
+    getLatestInterviews({ userId: user?.id }),
+  ]);
+
+  const hasPastInterviews = userInterviews?.length > 0;
+  const hasUpcomingInterviews = allInterview?.length > 0;
+
+
+
   return (
     <>
       <section className="card-cta flex flex-row gap-10" >
@@ -27,24 +40,30 @@ export default function Home() {
         <h2>Your Interviews</h2>
         <div className="interviews-section">
           {
-            dummyInterviews.map((interview)=>(
-              <InterviewCard key={interview.id} {...interview} />
-            ))
+            hasPastInterviews ?(
+              userInterviews?.map((interview)=>(
+                <InterviewCard key={interview.id} {...interview} />
+              ))
+            ):(
+              <p>You haven't taken any interviews.</p>
+            )
           }
         </div>
-        <p>You haven't taken any interviews.</p>
       </section>
 
       <section className="flex flex-col gap-6 mt-8">
         <h2>Take Interviews</h2>
         <div className="interviews-section">
           {
-            dummyInterviews.map((interview)=>(
-              <InterviewCard key={interview.id} {...interview} />
-            ))
+            hasUpcomingInterviews ?(
+              latestIN?.map((interview)=>(
+                <InterviewCard key={interview.id} {...interview} />
+              ))
+            ):(
+              <p>There are no interviews available</p>
+            )
           }
         </div>
-        You haven't taken any interviews.
       </section>
     </>
   );
